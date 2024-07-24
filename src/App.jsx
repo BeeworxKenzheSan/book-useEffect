@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BookForm } from "./components/bookForm/BookForm";
 import { Header } from "./components/header/Header";
 import { Button } from "./components/UI/Button";
@@ -13,6 +13,7 @@ import "react-toastify/dist/ReactToastify.css";
 function App() {
   const [open, setOpen] = useState(false);
   const [books, setBooks] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   function openAddBookForm() {
     setOpen((prev) => {
@@ -36,9 +37,29 @@ function App() {
     setBooks(updateBooks);
   };
 
-  const deleteHandler = (id) => {
-    const updateDeleteBooks = books.filter((item) => item.id !== id);
-    setBooks(updateDeleteBooks);
+  const deleteHandler = async (book) => {
+    if (book.source === "Api") {
+      try {
+        const response = await fetch(
+          `https://1ca3efa473676ad2.mokky.dev/books/${book.id}`,
+          { method: "DELETE" }
+        );
+        if (!response.ok) {
+          throw new Error("Кийинчерек корунуз!");
+        }
+        setBooks((prevState) => {
+          return prevState.filter((item) => item.id !== book.id);
+        });
+        toast.success("Очурулду!");
+        getBooks();
+      } catch (error) {
+        toast.error(error.message);
+      }
+    } else {
+      setBooks((prevState) => {
+        return prevState.filter((item) => item.id !== book.id);
+      });
+    }
   };
 
   const addRandomBook = () => {
@@ -56,6 +77,7 @@ function App() {
   };
 
   const addBookViaApi = async (book) => {
+    setIsLoading(true);
     try {
       const response = await fetch("https://1ca3efa473676ad2.mokky.dev/books", {
         method: "POST",
@@ -64,18 +86,51 @@ function App() {
           "Content-type": "application/json",
         },
       });
+      if (!response.ok) {
+        const result = await response.json();
+        throw new Error(
+          JSON.stringify({ code: result.statusCode, error: result.message })
+        );
+      }
       toast.success("Жаны китеп кошулду!");
       openAddBookForm();
+      getBooks();
+      setIsLoading(false);
     } catch (error) {
-      console.log("error", error);
+      setIsLoading(false);
+      toast.error(error.message);
     }
   };
+
+  const getBooks = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch("https://1ca3efa473676ad2.mokky.dev/books");
+      if (!response.ok) {
+        throw new Error("Кийинчерек корунуз!");
+      }
+      const serverBooks = await response.json();
+      setBooks((prevState) => {
+        return [...prevState, ...serverBooks];
+      });
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+      toast.error(error.message);
+    }
+  };
+
+  useEffect(() => {
+    getBooks();
+  }, []);
 
   return (
     <AppContainer>
       <ToastContainer />
       <Header />
-      <Button onClick={openAddBookForm}>{buttonText}</Button>
+      <Button isLoading={isLoading} onClick={openAddBookForm}>
+        {buttonText}
+      </Button>
       <AppMainWrapper className="app-main">
         <AppLeftColumn>
           <Modal open={open} onClose={openAddBookForm}>

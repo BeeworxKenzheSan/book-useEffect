@@ -19,7 +19,7 @@ export const BookList = ({ books, onToggle, onDelete }) => {
   };
 
   const deleteBookHandler = () => {
-    onDelete(deletingItem.id);
+    onDelete(deletingItem);
     setConfirmDelete(false);
   };
   return (
