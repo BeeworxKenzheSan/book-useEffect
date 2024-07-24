@@ -53,7 +53,7 @@ export const BookList = ({ books, onToggle, onDelete }) => {
               </b>
               <BookInfo>
                 <strong>
-                  {book.title} {book.author}
+                  {book.title} {book.author} ({book.source})
                 </strong>
               </BookInfo>
               <BookActions>

@@ -45,11 +45,26 @@ function App() {
       ...bookData[randomBook],
       isFavorite: false,
       id: Math.floor(Math.random() * 1000),
+      source: "Random",
     };
     setBooks((prev) => {
       return [...prev, newBook];
     });
     openAddBookForm();
+  };
+
+  const addBookViaApi = async (book) => {
+    try {
+      const response = await fetch("https://1ca3efa473676ad2.mokky.dev/books", {
+        method: "POST",
+        body: JSON.stringify(book),
+        headers: {
+          "Content-type": "application/json",
+        },
+      });
+    } catch (error) {
+      console.log("error", error);
+    }
   };
 
   return (

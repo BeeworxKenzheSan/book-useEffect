@@ -32,6 +32,7 @@ export const BookForm = ({ onCancel, onAddBook, onAddRandomBook }) => {
       author: authorRef.current.value,
       isFavorite: false,
       id: Math.floor(Math.random() * 1000),
+      source: "Manually",
     };
     onAddBook(newBook);
     titleRef.current.value = "";
