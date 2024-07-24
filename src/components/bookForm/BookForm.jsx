@@ -8,7 +8,12 @@ import styled from "styled-components";
 // useRef - получает прямую ссылку на dom element
 // useRef - работает через дом
 
-export const BookForm = ({ onCancel, onAddBook, onAddRandomBook }) => {
+export const BookForm = ({
+  onCancel,
+  onAddBook,
+  onAddRandomBook,
+  onAddBookByApi,
+}) => {
   //   const [title, setTitle] = useState("");
   //   const [author, setAuthor] = useState("");
   const titleRef = useRef(null);
@@ -39,6 +44,27 @@ export const BookForm = ({ onCancel, onAddBook, onAddRandomBook }) => {
     authorRef.current.value = "";
   };
 
+  const addBookByApi = () => {
+    if (
+      authorRef.current.value.length < 3 ||
+      titleRef.current.value.length < 3
+    ) {
+      setIsError(true);
+      return;
+    }
+
+    setIsError(false);
+    const newBook = {
+      title: titleRef.current.value,
+      author: authorRef.current.value,
+      isFavorite: false,
+      source: "Api",
+    };
+    onAddBookByApi(newBook);
+    titleRef.current.value = "";
+    authorRef.current.value = "";
+  };
+
   return (
     <Wrapper>
       <Form onSubmit={onSubmitHandler}>
@@ -50,7 +76,9 @@ export const BookForm = ({ onCancel, onAddBook, onAddRandomBook }) => {
           <Button type="button" onClick={onAddRandomBook}>
             Add Random
           </Button>
-          <Button type="button">Add Random via API</Button>
+          <Button type="button" onClick={addBookByApi}>
+            Add Random via API
+          </Button>
           <Button type="button" onClick={onCancel} variant="outlined">
             Cancel
           </Button>

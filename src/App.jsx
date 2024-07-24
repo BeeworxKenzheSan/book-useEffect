@@ -7,6 +7,8 @@ import { Modal } from "./components/UI/Modal";
 import bookData from "./data/books.json";
 import { Filter } from "./components/filter/Filter";
 import styled from "styled-components";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   const [open, setOpen] = useState(false);
@@ -62,6 +64,8 @@ function App() {
           "Content-type": "application/json",
         },
       });
+      toast.success("Жаны китеп кошулду!");
+      openAddBookForm();
     } catch (error) {
       console.log("error", error);
     }
@@ -69,6 +73,7 @@ function App() {
 
   return (
     <AppContainer>
+      <ToastContainer />
       <Header />
       <Button onClick={openAddBookForm}>{buttonText}</Button>
       <AppMainWrapper className="app-main">
@@ -78,6 +83,7 @@ function App() {
               onCancel={openAddBookForm}
               onAddBook={onAddNewBook}
               onAddRandomBook={addRandomBook}
+              onAddBookByApi={addBookViaApi}
             />
           </Modal>
         </AppLeftColumn>
