@@ -72,10 +72,10 @@ export const BookForm = ({
         <FormInput ref={titleRef} id="f1" labelText="Title" error={isError} />
         <FormInput ref={authorRef} id="f2" labelText="Author" error={isError} />
         <ButtonContainer>
-          <Button type="submit">Add Book</Button>
+          {/* <Button type="submit">Add Book</Button>
           <Button type="button" onClick={onAddRandomBook}>
             Add Random
-          </Button>
+          </Button> */}
           <Button type="button" onClick={addBookByApi}>
             Add Random via API
           </Button>

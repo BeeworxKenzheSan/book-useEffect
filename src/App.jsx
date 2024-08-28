@@ -23,107 +23,6 @@ function App() {
 
   const buttonText = !open ? "Add Book" : "Cancel";
 
-  function onAddNewBook(parametr) {
-    setBooks((prev) => {
-      return [...prev, parametr];
-    });
-    openAddBookForm();
-  }
-
-  const toggleFavorite = (id) => {
-    const updateBooks = books.map((item) =>
-      item.id === id ? { ...item, isFavorite: !item.isFavorite } : item
-    );
-    setBooks(updateBooks);
-  };
-
-  const deleteHandler = async (book) => {
-    if (book.source === "Api") {
-      try {
-        const response = await fetch(
-          `https://1ca3efa473676ad2.mokky.dev/books/${book.id}`,
-          { method: "DELETE" }
-        );
-        if (!response.ok) {
-          throw new Error("Кийинчерек корунуз!");
-        }
-        setBooks((prevState) => {
-          return prevState.filter((item) => item.id !== book.id);
-        });
-        toast.success("Очурулду!");
-        getBooks();
-      } catch (error) {
-        toast.error(error.message);
-      }
-    } else {
-      setBooks((prevState) => {
-        return prevState.filter((item) => item.id !== book.id);
-      });
-    }
-  };
-
-  const addRandomBook = () => {
-    const randomBook = Math.floor(Math.random() * bookData.length);
-    const newBook = {
-      ...bookData[randomBook],
-      isFavorite: false,
-      id: Math.floor(Math.random() * 1000),
-      source: "Random",
-    };
-    setBooks((prev) => {
-      return [...prev, newBook];
-    });
-    openAddBookForm();
-  };
-
-  const addBookViaApi = async (book) => {
-    setIsLoading(true);
-    try {
-      const response = await fetch("https://1ca3efa473676ad2.mokky.dev/books", {
-        method: "POST",
-        body: JSON.stringify(book),
-        headers: {
-          "Content-type": "application/json",
-        },
-      });
-      if (!response.ok) {
-        const result = await response.json();
-        throw new Error(
-          JSON.stringify({ code: result.statusCode, error: result.message })
-        );
-      }
-      toast.success("Жаны китеп кошулду!");
-      openAddBookForm();
-      getBooks();
-      setIsLoading(false);
-    } catch (error) {
-      setIsLoading(false);
-      toast.error(error.message);
-    }
-  };
-
-  const getBooks = async () => {
-    setIsLoading(true);
-    try {
-      const response = await fetch("https://1ca3efa473676ad2.mokky.dev/books");
-      if (!response.ok) {
-        throw new Error("Кийинчерек корунуз!");
-      }
-      const serverBooks = await response.json();
-      setBooks((prevState) => {
-        return [...prevState, ...serverBooks];
-      });
-      setIsLoading(false);
-    } catch (error) {
-      setIsLoading(false);
-      toast.error(error.message);
-    }
-  };
-
-  useEffect(() => {
-    getBooks();
-  }, []);
-
   return (
     <AppContainer>
       <ToastContainer />
@@ -134,20 +33,15 @@ function App() {
       <AppMainWrapper className="app-main">
         <AppLeftColumn>
           <Modal open={open} onClose={openAddBookForm}>
-            <BookForm
-              onCancel={openAddBookForm}
-              onAddBook={onAddNewBook}
-              onAddRandomBook={addRandomBook}
-              onAddBookByApi={addBookViaApi}
-            />
+            <BookForm onCancel={openAddBookForm} onAddBookByApi={() => {}} />
           </Modal>
         </AppLeftColumn>
         <AppRightColumn className="app-right-column">
-          <Filter />
+          {/* <Filter /> */}
           <BookList
             books={books}
-            onDelete={deleteHandler}
-            onToggle={toggleFavorite}
+            // onDelete={deleteHandler}
+            // onToggle={toggleFavorite}
           />
         </AppRightColumn>
       </AppMainWrapper>
